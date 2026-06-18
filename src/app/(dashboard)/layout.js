@@ -1,10 +1,12 @@
-import { DashboardLayoutSidebar } from "./(admin)/admin/_compotents/DashboardLayoutSidebar";
+import DashboardNavbar from "./_compotents/DashboardNavbar";
+import SidebarComponents from "./_compotents/SidebarComponents";
 
 function RecruiterDashboarLayout({ children }) {
   return (
     <div>
+      <DashboardNavbar></DashboardNavbar>
       <div className="flex min-h-screen">
-        <DashboardLayoutSidebar />
+        <SidebarComponents />
         <div className="flex-1"> {children}</div>
       </div>
     </div>

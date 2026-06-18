@@ -2,7 +2,7 @@ import React from 'react'
 
 function Hero() {
   return (
-    <div className='text-9xl'>Hero</div>
+    <div className='text-9xl text-red-600'>Hero</div>
   )
 }
 

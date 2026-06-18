@@ -5,6 +5,7 @@ import logo from "../../../public/images/logo.png";
 import Image from "next/image";
 import { authClient, useSession } from "@/lib/auth-client";
 import { Dumbbell, ChevronDown, Menu, X, Zap } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +13,11 @@ export default function Navbar() {
 
   const session = useSession();
   const user = session?.data?.user;
+
+  const pathname = usePathname();
+  if (pathname.includes("dashboard")) {
+    return null;
+  }
 
   // useEffect(() => {
   //   const handleScroll = () => {

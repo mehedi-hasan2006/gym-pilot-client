@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "@/lib/auth-client";
 import {
   LayoutSideContentLeft,
   Bell,
@@ -11,39 +10,36 @@ import {
   FileText,
 } from "@gravity-ui/icons";
 import { Avatar, Button, Drawer } from "@heroui/react";
+import { icons, List, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function DashboardLayoutSidebar() {
+export function DashboardLayoutSidebar({ user }) {
   const pathname = usePathname();
 
-  const session = useSession();
-  const user = session?.data?.user;
+  const dashboardItems = {
+    member: [
+      { icon: House, label: "Home", href: "/member/dashboard" },
+      { icon: Plus, label: "Add Community Post", href: "/add-community-post" },
+      {
+        icon: House,
+        label: "All Community Post",
+        href: "/member/all-community-post",
+      },
+    ],
+    trainner: [
+      { icon: House, label: "Home", href: "/trainner/dashboard" },
+      { icon: House, label: "Home", href: "/add-community-post" },
+      { icon: List, label: "Applications", href: "/trainner/application" },
+    ],
+    admin: [
+      { icon: House, label: "Home", href: "/admin/dashboard" },
+      { icon: House, label: "Home", href: "/add-community-post" },
+      { icon: User, label: "Users", href: "/admin/users" },
+    ],
+  };
 
-  const navItems = [
-    { icon: House, label: "Home", href: "/dashboard/recruiter" },
-    {
-      icon: Plus,
-      label: "Add Job",
-      href: "/dashboard/recruiter/jobs/new",
-    },
-    {
-      icon: Bell,
-      label: "My Company",
-      href: "/dashboard/recruiter/company",
-    },
-    {
-      icon: Envelope,
-      label: "Manage Jobs",
-      href: "/dashboard/recruiter/manage-job",
-    },
-    {
-      icon: FileText,
-      label: "Applications",
-      href: "/dashboard/recruiter/applications",
-    },
-    { icon: Gear, label: "Settings", href: "/dashboard/recruiter/settings" },
-  ];
+  const navItems = dashboardItems[user?.role];
 
   const userCard = (
     <div className="flex flex-col items-center gap-3 px-3 py-2.5 rounded-xl  border border-zinc-800/50 backdrop-blur-sm">
