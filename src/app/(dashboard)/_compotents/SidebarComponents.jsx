@@ -4,7 +4,7 @@ import { sessionData } from "@/lib/session/session";
 
 export default async function SidebarComponents() {
   const session = await sessionData();
-  const user = session?.user;
+  const user = session;
 
   return (
     <div>

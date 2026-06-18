@@ -15,7 +15,7 @@ export default function Navbar() {
   const user = session?.data?.user;
 
   const pathname = usePathname();
-  if (pathname.includes("dashboard")) {
+  if (pathname.includes("dashboard" && "admin" && "member" && "trainner")) {
     return null;
   }
 

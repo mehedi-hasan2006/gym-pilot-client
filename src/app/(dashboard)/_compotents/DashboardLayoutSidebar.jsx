@@ -10,12 +10,13 @@ import {
   FileText,
 } from "@gravity-ui/icons";
 import { Avatar, Button, Drawer } from "@heroui/react";
-import { icons, List, User } from "lucide-react";
+import { Book, icons, List, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function DashboardLayoutSidebar({ user }) {
   const pathname = usePathname();
+  
 
   const dashboardItems = {
     member: [
@@ -29,7 +30,9 @@ export function DashboardLayoutSidebar({ user }) {
     ],
     trainner: [
       { icon: House, label: "Home", href: "/trainner/dashboard" },
-      { icon: House, label: "Home", href: "/add-community-post" },
+      { icon: Plus, label: "Add Class", href: "/trainner/add-class" },
+      { icon: Book, label: "My Classes", href: "/trainner/my-classes" },
+      { icon: Plus, label: "Add Community Post", href: "/add-community-post" },
       { icon: List, label: "Applications", href: "/trainner/application" },
     ],
     admin: [
@@ -39,7 +42,7 @@ export function DashboardLayoutSidebar({ user }) {
     ],
   };
 
-  const navItems = dashboardItems[user?.role];
+  const navItems = dashboardItems[user?.role] ?? [];
 
   const userCard = (
     <div className="flex flex-col items-center gap-3 px-3 py-2.5 rounded-xl  border border-zinc-800/50 backdrop-blur-sm">

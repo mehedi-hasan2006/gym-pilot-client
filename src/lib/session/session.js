@@ -6,5 +6,5 @@ export const sessionData = async () => {
     headers: await headers(), 
   });
 
-  return session || null;
+  return session?.user || null;
 };
