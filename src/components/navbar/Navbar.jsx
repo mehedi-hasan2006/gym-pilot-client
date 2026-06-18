@@ -13,13 +13,13 @@ export default function Navbar() {
   const session = useSession();
   const user = session?.data?.user;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setIsScrolled(window.scrollY > 20);
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   const handleLogout = async () => {
     await authClient.signOut();
@@ -27,27 +27,22 @@ export default function Navbar() {
 
   const navLinks = [
     {
-      name: "Workouts",
-      href: "/workouts",
-      icon: <Dumbbell className="w-4 h-4" />,
+      name: "Home",
+      href: "/",
     },
     {
-      name: "Programs",
-      href: "/programs",
+      name: "All Classes",
+      href: "/all-class",
     },
     {
-      name: "Trainers",
-      href: "/trainers",
-    },
-    {
-      name: "Pricing",
-      href: "/pricing",
+      name: "Community Forum",
+      href: "/community-forum",
     },
   ];
 
   return (
     <nav
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+      className={` w-full transition-all duration-300 ${
         isScrolled
           ? "bg-black/90 backdrop-blur-xl shadow-2xl shadow-orange-500/5"
           : "bg-transparent"
@@ -104,13 +99,11 @@ export default function Navbar() {
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10">
                   <div className="w-8 h-8 rounded-full bg-linear-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold text-sm">
                     <Avatar>
-                      <Avatar.Image
-                        alt={user?.name}
-                        src={user?.image}
-                      />
-                      <Avatar.Fallback>{user?.name?.charAt(0) || "U"}</Avatar.Fallback>
+                      <Avatar.Image alt={user?.name} src={user?.image} />
+                      <Avatar.Fallback>
+                        {user?.name?.charAt(0) || "U"}
+                      </Avatar.Fallback>
                     </Avatar>
-                    
                   </div>
                   <span className="text-sm font-medium text-gray-200">
                     {user?.name}
