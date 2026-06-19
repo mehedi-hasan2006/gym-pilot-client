@@ -43,3 +43,17 @@ export const serverFetch = async (path) => {
   const res = await fetch(`${baseURL}${path}`);
   return res.json();
 };
+
+
+
+//--------------------------
+//            Delete
+//--------------------------
+
+export const deleteClass = async (path, classId) => {
+  const response = await fetch(`${baseURL}${path}${classId}`, {
+    method: "DELETE",
+  });
+  return response.json();
+};
+

@@ -18,7 +18,7 @@ import {
   AlertCircle,
   Plus,
 } from "lucide-react";
-import { editClass, getClasses } from "@/lib/class/class";
+import { deleteClassById, editClass, getClasses } from "@/lib/class/class";
 
 export default function MyClasses({ user }) {
   const router = useRouter();
@@ -101,13 +101,9 @@ export default function MyClasses({ user }) {
     setIsDeleting(true);
     try {
       // Replace with your actual API endpoint
-      const response = await fetch(`/api/classes/${selectedClass._id}`, {
-        method: "DELETE",
-      });
+      const deleteClass = await deleteClassById(selectedClass._id);
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (deleteClass) {
         setClasses(classes.filter((c) => c._id !== selectedClass._id));
         showToast("Class deleted successfully", "success");
         setShowDeleteModal(false);
