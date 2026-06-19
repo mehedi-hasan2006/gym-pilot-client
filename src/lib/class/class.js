@@ -26,6 +26,14 @@ export const getAllClasses = async () => {
   return serverFetch("/api/classes");
 };
 
+export const getApprovedClasses = async () => {
+  return serverFetch("/api/approved-classes?status=Approved");
+};
+
+export const getApprovedClassById = async (classId) => {
+  return serverFetch(`/api/approved-class/${classId}`);
+};
+
 export const getClassAttendees = async (classId) => {
   const response = await fetch(`/api/classes/${classId}/attendees`);
   return response.json();

@@ -37,7 +37,8 @@ export function DashboardLayoutSidebar({ user }) {
     ],
     admin: [
       { icon: House, label: "Home", href: "/admin/dashboard" },
-      { icon: House, label: "Home", href: "/add-community-post" },
+      { icon: Book, label: "All Classes", href: "/admin/classes" },
+      { icon: Plus, label: "Add Post", href: "/add-community-post" },
       { icon: User, label: "Users", href: "/admin/users" },
     ],
   };

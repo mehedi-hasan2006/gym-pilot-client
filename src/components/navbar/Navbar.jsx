@@ -15,7 +15,16 @@ export default function Navbar() {
   const user = session?.data?.user;
 
   const pathname = usePathname();
-  if (pathname.includes("dashboard" && "admin" && "member" && "trainner")) {
+  if (pathname.includes("dashboard")) {
+    return null;
+  }
+  if (pathname.includes("admin")) {
+    return null;
+  }
+  if (pathname.includes("member")) {
+    return null;
+  }
+  if (pathname.includes("trainner")) {
     return null;
   }
 
@@ -38,7 +47,7 @@ export default function Navbar() {
     },
     {
       name: "All Classes",
-      href: "/all-class",
+      href: "/all-classes",
     },
     {
       name: "Community Forum",

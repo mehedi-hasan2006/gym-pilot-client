@@ -44,6 +44,10 @@ export const serverFetch = async (path) => {
   return res.json();
 };
 
+// export const serverFetchById = async (path, id) => {
+//   const res = await fetch(`${baseURL}${path}${id}`);
+//   return res.json();
+// };
 
 
 //--------------------------
