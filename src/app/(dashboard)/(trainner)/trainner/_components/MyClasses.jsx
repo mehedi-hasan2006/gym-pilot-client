@@ -18,9 +18,9 @@ import {
   AlertCircle,
   Plus,
 } from "lucide-react";
-import { getClasses } from "@/lib/class/class";
+import { editClass, getClasses } from "@/lib/class/class";
 
-export default function MyClasses() {
+export default function MyClasses({ user }) {
   const router = useRouter();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,11 +74,11 @@ export default function MyClasses() {
   const fetchClasses = async () => {
     try {
       setLoading(true);
-      const getClass = await getClasses();
+      const getClass = await getClasses(user?.id);
       const data = getClass;
-      console.log(data);
+
       if (data) {
-        setClasses(data  || []);
+        setClasses(data || []);
       } else {
         setError(data.message || "Failed to fetch classes");
       }
@@ -133,7 +133,6 @@ export default function MyClasses() {
       duration: classItem.duration,
       price: classItem.price,
       description: classItem.description,
-      status: classItem.status,
     });
     setShowUpdateModal(true);
   };
@@ -143,31 +142,23 @@ export default function MyClasses() {
     setIsUpdating(true);
 
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch(`/api/classes/${selectedClass._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updateForm),
-      });
+      const result = await editClass(selectedClass._id, updateForm);
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (result.modifiedCount > 0) {
         setClasses(
           classes.map((c) =>
             c._id === selectedClass._id ? { ...c, ...updateForm } : c,
           ),
         );
+
         showToast("Class updated successfully", "success");
         setShowUpdateModal(false);
       } else {
-        showToast("Failed to update class", "error");
+        showToast("No changes were made", "warning");
       }
     } catch (err) {
+      console.error(err);
       showToast("Error updating class", "error");
-      console.error("Error updating class:", err);
     } finally {
       setIsUpdating(false);
     }

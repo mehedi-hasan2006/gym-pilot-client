@@ -1,10 +1,12 @@
 import React from "react";
 import MyClasses from "../_components/MyClasses";
+import { sessionData } from "@/lib/session/session";
 
-export default function MyClassesPage() {
+export default async function MyClassesPage() {
+  const user = await sessionData()
   return (
     <div>
-      <MyClasses />
+      <MyClasses user={user} />
     </div>
   );
 }

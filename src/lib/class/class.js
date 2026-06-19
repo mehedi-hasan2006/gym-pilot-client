@@ -1,27 +1,20 @@
-import { sereverMutation, serverFetch } from "../actions/server";
+import { sereverMutation, serverFetch, updateClass } from "../actions/server";
 
 export const createClass = async (data) => {
   return sereverMutation("/api/classes", data);
 };
 
-export const getClasses = async () => {
-  return serverFetch("/api/classes");
+export const getClasses = async (userId) => {
+  return serverFetch(`/api/classes/${userId}`);
+};
+
+export const editClass = async (classId, data) => {
+  return updateClass("/api/classes/", classId, data);
 };
 
 export const deleteClass = async (classId) => {
   const response = await fetch(`/api/classes/${classId}`, {
     method: "DELETE",
-  });
-  return response.json();
-};
-
-export const updateClass = async (classId, data) => {
-  const response = await fetch(`/api/classes/${classId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
   });
   return response.json();
 };
