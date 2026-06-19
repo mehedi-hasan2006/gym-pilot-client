@@ -55,7 +55,7 @@ const ClassDetails = ({ id, user, res }) => {
   const checkBookingStatus = async () => {
     try {
       // Check if user has already booked this class
-      const response = await fetch(
+      const response = await  fetch(
         `/api/bookings/check?classId=${id}&userId=${user._id}`,
       );
       const data = await response.json();

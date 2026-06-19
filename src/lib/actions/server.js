@@ -30,7 +30,7 @@ export const updateClass = async (path, classId, data) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to update class");
+    throw new Error("Something went wrong!!..");
   }
 
   return await response.json();

@@ -34,6 +34,10 @@ export const getApprovedClassById = async (classId) => {
   return serverFetch(`/api/approved-class/${classId}`);
 };
 
+export const bookings = async (classId, data) => {
+  return updateClass('/api/bookings/',classId, data);
+};
+
 export const getClassAttendees = async (classId) => {
   const response = await fetch(`/api/classes/${classId}/attendees`);
   return response.json();

@@ -45,33 +45,33 @@ const MemberAllClasses = () => {
   const getDifficultyColor = (level) => {
     switch (level) {
       case "Beginner":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
       case "Intermediate":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
       case "Advanced":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Explore Our Fitness Classes
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 dark:text-gray-400">
             Find the perfect class to achieve your fitness goals
           </p>
         </div>
@@ -80,23 +80,23 @@ const MemberAllClasses = () => {
         <div className="mb-8 flex flex-col sm:flex-row gap-4">
           {/* Search Bar */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
             <input
               type="text"
               placeholder="Search classes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent dark:focus:border-transparent transition-colors"
             />
           </div>
 
           {/* Category Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white appearance-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent dark:focus:border-transparent transition-colors cursor-pointer"
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -108,7 +108,7 @@ const MemberAllClasses = () => {
         </div>
 
         {/* Results Count */}
-        <div className="mb-6 text-gray-600">
+        <div className="mb-6 text-gray-600 dark:text-gray-400">
           Showing {filteredClasses.length}{" "}
           {filteredClasses.length === 1 ? "class" : "classes"}
         </div>
@@ -116,11 +116,11 @@ const MemberAllClasses = () => {
         {/* Classes Grid */}
         {filteredClasses.length === 0 ? (
           <div className="text-center py-12">
-            <Dumbbell className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <Dumbbell className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               No classes found
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-gray-400">
               Try adjusting your search or filter criteria
             </p>
           </div>
@@ -129,24 +129,25 @@ const MemberAllClasses = () => {
             {filteredClasses.map((cls) => (
               <div
                 key={cls._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-2xl dark:shadow-gray-900/50 overflow-hidden hover:shadow-xl dark:hover:shadow-gray-900/70 transition-all duration-300 hover:scale-[1.02] group"
               >
                 {/* Class Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={cls.image}
                     alt={cls.className}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-sm font-semibold shadow">
+                  <div className="absolute top-3 right-3 bg-white dark:bg-gray-800 px-3 py-1 rounded-full text-sm font-semibold shadow-lg dark:shadow-gray-900/50 text-gray-900 dark:text-white backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
                     ${cls.price}
                   </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
                 {/* Class Content */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-800">
                       {cls.category}
                     </span>
                     <span
@@ -156,37 +157,37 @@ const MemberAllClasses = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {cls.className}
                   </h3>
 
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
                     <Clock className="h-4 w-4 mr-1" />
                     <span>{cls.duration}</span>
                     <Users className="h-4 w-4 ml-4 mr-1" />
                     <span>{cls.trainnerName}</span>
                   </div>
 
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                     {cls.description}
                   </p>
 
                   {/* Schedule Preview */}
                   <div className="mb-4">
-                    <p className="text-xs font-medium text-gray-500 mb-2">
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-500 mb-2">
                       Available Days:
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {cls.schedules?.slice(0, 3).map((schedule, idx) => (
                         <span
                           key={idx}
-                          className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
+                          className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded border border-gray-200 dark:border-gray-600"
                         >
                           {schedule.day}
                         </span>
                       ))}
                       {cls.schedules?.length > 3 && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                           +{cls.schedules.length - 3} more
                         </span>
                       )}
@@ -196,7 +197,7 @@ const MemberAllClasses = () => {
                   {/* View Details Button */}
                   <Link
                     href={`/all-classes/${cls._id}`}
-                    className="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+                    className="block w-full text-center bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 dark:hover:from-blue-600 dark:hover:to-blue-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:translate-y-[-2px]"
                   >
                     View Details
                   </Link>
