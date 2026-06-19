@@ -21,6 +21,11 @@ export const deleteClassById = async (classId) => {
   return deleteClass("/api/classes/", classId);
 };
 
+// admin access this api
+export const getAllClasses = async () => {
+  return serverFetch("/api/classes");
+};
+
 export const getClassAttendees = async (classId) => {
   const response = await fetch(`/api/classes/${classId}/attendees`);
   return response.json();

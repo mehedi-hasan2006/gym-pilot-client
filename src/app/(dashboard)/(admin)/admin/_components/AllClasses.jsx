@@ -18,9 +18,14 @@ import {
   AlertCircle,
   Plus,
 } from "lucide-react";
-import { deleteClassById, editClass, getClasses } from "@/lib/class/class";
+import {
+  deleteClassById,
+  editClass,
+  getAllClasses,
+  getClasses,
+} from "@/lib/class/class";
 
-export default function MyClasses({ user }) {
+export default function AllClasses() {
   const router = useRouter();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +52,7 @@ export default function MyClasses({ user }) {
     duration: "",
     price: "",
     description: "",
-    status: "Pending",
+    status: "pending",
   });
 
   const [isUpdating, setIsUpdating] = useState(false);
@@ -74,7 +79,7 @@ export default function MyClasses({ user }) {
   const fetchClasses = async () => {
     try {
       setLoading(true);
-      const getClass = await getClasses(user?.id);
+      const getClass = await getAllClasses();
       const data = getClass;
 
       if (data) {
@@ -643,6 +648,27 @@ export default function MyClasses({ user }) {
                       <option value="All Levels">All Levels</option>
                     </select>
                   </div>
+                </div>
+
+                {/* status */}
+                <div>
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={updateForm.status}
+                    onChange={(e) =>
+                      setUpdateForm({
+                        ...updateForm,
+                        status: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-violet-500 transition-colors"
+                  >
+                    <option value="not_selected">Select</option>
+                    <option value="Approved">Approve</option>
+                    <option value="Rejected">Reject</option>
+                  </select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
