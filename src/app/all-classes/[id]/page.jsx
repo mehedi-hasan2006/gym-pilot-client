@@ -5,11 +5,11 @@ import { sessionData } from "@/lib/session/session";
 export default async function ApprovedClassDetailsPage({ params }) {
   const { id } = await params;
 
-  console.log(id)
+  // console.log(id)
   const user = await sessionData();
 
   const res = await getApprovedClassById(id);
-  console.log('rs' , res)
+  // console.log('rs' , res)
 
   return (
     <div>

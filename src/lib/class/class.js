@@ -35,7 +35,15 @@ export const getApprovedClassById = async (classId) => {
 };
 
 export const bookings = async (classId, data) => {
-  return updateClass('/api/bookings/',classId, data);
+  return updateClass("/api/bookings/", classId, data);
+};
+
+export const addPost = async (data) => {
+  return sereverMutation("/api/post", data);
+};
+
+export const getPosts = async () => {
+  return serverFetch("/api/posts");
 };
 
 export const getClassAttendees = async (classId) => {

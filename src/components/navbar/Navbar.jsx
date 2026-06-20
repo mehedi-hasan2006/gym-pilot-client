@@ -27,6 +27,9 @@ export default function Navbar() {
   if (pathname.includes("trainner")) {
     return null;
   }
+  if (pathname.includes("add-community-post")) {
+    return null;
+  }
 
   // useEffect(() => {
   //   const handleScroll = () => {
