@@ -16,7 +16,6 @@ import { usePathname } from "next/navigation";
 
 export function DashboardLayoutSidebar({ user }) {
   const pathname = usePathname();
-  
 
   const dashboardItems = {
     member: [
@@ -33,12 +32,14 @@ export function DashboardLayoutSidebar({ user }) {
       { icon: Plus, label: "Add Class", href: "/trainner/add-class" },
       { icon: Book, label: "My Classes", href: "/trainner/my-classes" },
       { icon: Plus, label: "Add Community Post", href: "/add-community-post" },
+      { icon: List, label: " Community Post", href: "/community-post" },
       { icon: List, label: "Applications", href: "/trainner/application" },
     ],
     admin: [
       { icon: House, label: "Home", href: "/admin/dashboard" },
       { icon: Book, label: "All Classes", href: "/admin/classes" },
       { icon: Plus, label: "Add Post", href: "/add-community-post" },
+      { icon: List, label: " Community Post", href: "/community-post" },
       { icon: User, label: "Users", href: "/admin/users" },
     ],
   };

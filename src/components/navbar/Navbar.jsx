@@ -30,6 +30,9 @@ export default function Navbar() {
   if (pathname.includes("add-community-post")) {
     return null;
   }
+  if (pathname.includes("community-post")) {
+    return null;
+  }
 
   // useEffect(() => {
   //   const handleScroll = () => {

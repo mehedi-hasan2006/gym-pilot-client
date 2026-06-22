@@ -64,17 +64,17 @@ export const deleteClass = async (path, classId) => {
 //     Like, Comment
 // ========================
 
-export const like = async () => {
-  const response = await fetch(`/api/posts/${postId}/like`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userId: user._id,
-    }),
-  });
+// export const like = async () => {
+//   const response = await fetch(`/api/posts/${postId}/like`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       userId: user._id,
+//     }),
+//   });
 
-  const post = await response.json();
-  setPost(post);
-};
+//   const post = await response.json();
+//   setPost(post);
+// };

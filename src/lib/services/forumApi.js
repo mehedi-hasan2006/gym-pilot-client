@@ -7,6 +7,9 @@ export const forumApi = {
   // Get single post
   getPost: (postId) => apiRequest(`/api/posts/${postId}`),
 
+  // Get Posts for Specefic user
+  getPostsBySpecificUser: (authorId) => apiRequest(`/api/posts/${authorId}`),
+
   // Like post
   likePost: (postId, userId) =>
     apiRequest(`/api/posts/${postId}/like`, {
