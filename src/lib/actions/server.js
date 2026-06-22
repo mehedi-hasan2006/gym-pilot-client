@@ -49,7 +49,6 @@ export const serverFetch = async (path) => {
 //   return res.json();
 // };
 
-
 //--------------------------
 //            Delete
 //--------------------------
@@ -61,3 +60,21 @@ export const deleteClass = async (path, classId) => {
   return response.json();
 };
 
+//=========================
+//     Like, Comment
+// ========================
+
+export const like = async () => {
+  const response = await fetch(`/api/posts/${postId}/like`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: user._id,
+    }),
+  });
+
+  const post = await response.json();
+  setPost(post);
+};

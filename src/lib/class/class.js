@@ -46,6 +46,10 @@ export const getPosts = async () => {
   return serverFetch("/api/posts");
 };
 
+export const getPostDetails = async (postId) => {
+  return serverFetch(`/api/post/${postId}`);
+};
+
 export const getClassAttendees = async (classId) => {
   const response = await fetch(`/api/classes/${classId}/attendees`);
   return response.json();
