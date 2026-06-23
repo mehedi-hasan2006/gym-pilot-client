@@ -16,8 +16,10 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
+import { Avatar } from "@heroui/react";
+import { authClient } from "@/lib/auth-client";
 
-const DashboardNavbarComponent = ({ user, onLogout }) => {
+const DashboardNavbarComponent = ({ user }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -59,9 +61,10 @@ const DashboardNavbarComponent = ({ user, onLogout }) => {
     document.documentElement.classList.toggle("dark", newDarkMode);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsProfileOpen(false);
-    if (onLogout) onLogout();
+    await authClient.signOut();
+    router.push("/signin");
   };
 
   const handleSearch = (e) => {
@@ -183,9 +186,12 @@ const DashboardNavbarComponent = ({ user, onLogout }) => {
                 className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-sm font-medium text-white">
-                    {user?.name?.charAt(0) || "U"}
-                  </span>
+                  <Avatar>
+                    <Avatar.Image alt={user?.name} src={user?.image} />
+                    <Avatar.Fallback>
+                      {user?.name?.charAt(0) || "U"}
+                    </Avatar.Fallback>
+                  </Avatar>
                 </div>
                 <div className="hidden md:block text-left">
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-200">

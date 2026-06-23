@@ -26,6 +26,7 @@ export function DashboardLayoutSidebar({ user }) {
         label: "All Community Post",
         href: "/member/all-community-post",
       },
+      { icon: List, label: "Applications", href: "/member/application" },
     ],
     trainner: [
       { icon: House, label: "Home", href: "/trainner/dashboard" },
@@ -33,7 +34,6 @@ export function DashboardLayoutSidebar({ user }) {
       { icon: Book, label: "My Classes", href: "/trainner/my-classes" },
       { icon: Plus, label: "Add Community Post", href: "/add-community-post" },
       { icon: List, label: " Community Post", href: "/community-post" },
-      { icon: List, label: "Applications", href: "/trainner/application" },
     ],
     admin: [
       { icon: House, label: "Home", href: "/admin/dashboard" },
@@ -48,14 +48,14 @@ export function DashboardLayoutSidebar({ user }) {
 
   const userCard = (
     <div className="flex flex-col items-center gap-3 px-3 py-2.5 rounded-xl  border border-zinc-800/50 backdrop-blur-sm">
-      <div className="relative">
+      <div className="relative ">
         <Avatar>
           <Avatar.Image alt={user?.name} src={user?.image} />
           <Avatar.Fallback>{user?.name?.charAt(0) || "U"}</Avatar.Fallback>
         </Avatar>
         <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-zinc-900" />
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 text-center">
         <p className="text-sm font-semibold text-white truncate leading-tight">
           {user?.name || "User"}
         </p>
