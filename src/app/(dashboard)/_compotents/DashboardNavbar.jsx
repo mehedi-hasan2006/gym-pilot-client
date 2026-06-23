@@ -1,7 +1,13 @@
 import React from "react";
+import DashboardNavbarComponent from "./DashboardNavbarComponent";
+import { sessionData } from "@/lib/session/session";
 
-function DashboardNavbar() {
-  return <div>DashboardNavbar</div>;
+export default async function DashboardNavbar() {
+
+  const user = await sessionData()
+  return (
+    <div>
+      <DashboardNavbarComponent user={user}></DashboardNavbarComponent>
+    </div>
+  );
 }
-
-export default DashboardNavbar;
