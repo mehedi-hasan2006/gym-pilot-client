@@ -254,11 +254,11 @@ const ManageApplications = () => {
   const handleReject = async () => {
     if (!validateRejection()) return;
 
-    setProcessingId(selectedApplication?.id);
+    setProcessingId(selectedApplication?._id);
     setActionType("reject");
 
     try {
-      const response = await updateApplicationStatus(selectedApplication.id, {
+      const response = await updateApplicationStatus(selectedApplication._id, {
         status: "Rejected",
         rejectionCategory: rejectionCategory,
         rejectionReason: rejectionReason.trim(),
@@ -280,11 +280,11 @@ const ManageApplications = () => {
 
   // Handle delete application
   const handleDelete = async () => {
-    setProcessingId(selectedApplication?.id);
+    setProcessingId(selectedApplication?._id);
     setActionType("delete");
 
     try {
-      const response = await deleteApplication(selectedApplication.id);
+      const response = await deleteApplication(selectedApplication._id);
 
       if (response.success) {
         setSuccessMessage("Application deleted successfully!");
@@ -699,12 +699,12 @@ const ManageApplications = () => {
                 ) : (
                   paginatedApplications.map((application) => (
                     <tr
-                      key={application.id}
+                      key={application._id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                          <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
                             {application.name?.charAt(0)?.toUpperCase() || "?"}
                           </div>
                           <div>
@@ -757,12 +757,12 @@ const ManageApplications = () => {
                           {/* Approve Button */}
                           {application.status === "Pending" && (
                             <button
-                              onClick={() => handleApprove(application.id)}
-                              disabled={processingId === application.id}
+                              onClick={() => handleApprove(application._id)}
+                              disabled={processingId === application._id}
                               className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
                               title="Approve"
                             >
-                              {processingId === application.id &&
+                              {processingId === application._id &&
                               actionType === "approve" ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                               ) : (
@@ -1114,10 +1114,10 @@ const ManageApplications = () => {
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex gap-3">
               <button
                 onClick={handleReject}
-                disabled={processingId === selectedApplication.id}
+                disabled={processingId === selectedApplication._id}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
               >
-                {processingId === selectedApplication.id &&
+                {processingId === selectedApplication._id &&
                 actionType === "reject" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
@@ -1155,10 +1155,10 @@ const ManageApplications = () => {
               <div className="flex gap-3">
                 <button
                   onClick={handleDelete}
-                  disabled={processingId === selectedApplication.id}
+                  disabled={processingId === selectedApplication._id}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
-                  {processingId === selectedApplication.id &&
+                  {processingId === selectedApplication._id &&
                   actionType === "delete" ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
