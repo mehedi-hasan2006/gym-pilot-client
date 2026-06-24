@@ -60,21 +60,20 @@ export const deleteClass = async (path, classId) => {
   return response.json();
 };
 
-//=========================
-//     Like, Comment
-// ========================
+export const serverMutation = async (url, data = {}, method = "POST") => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}${url}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: method !== "DELETE" ? JSON.stringify(data) : undefined,
+  });
 
-// export const like = async () => {
-//   const response = await fetch(`/api/posts/${postId}/like`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       userId: user._id,
-//     }),
-//   });
+  const result = await response.json();
 
-//   const post = await response.json();
-//   setPost(post);
-// };
+  if (!response.ok) {
+    throw new Error(result.message || "Something went wrong");
+  }
+
+  return result;
+};

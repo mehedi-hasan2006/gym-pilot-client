@@ -15,7 +15,10 @@ import {
   Info,
   Star,
 } from "lucide-react";
-import { createApplication } from "@/lib/application/application";
+import {
+  createApplication,
+  getApplicationByUser,
+} from "@/lib/application/application";
 
 const ApplyTrainer = ({ user }) => {
   const router = useRouter();
@@ -32,6 +35,7 @@ const ApplyTrainer = ({ user }) => {
     certification: "",
     bio: "",
     availability: "Flexible",
+    status: "Pending",
   });
 
   const specialties = [
@@ -58,19 +62,21 @@ const ApplyTrainer = ({ user }) => {
   // Check for existing application
   useEffect(() => {
     const checkExistingApplication = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        setCheckingStatus(false);
+        return;
+      }
 
       try {
-        const response = await createApplication(user.id);
+        const response = await getApplicationByUser(user.id);
 
-        if (response.success) {
-          setExistingApplication(response);
+        if (response?.data) {
+          setExistingApplication(response.data);
+        } else {
+          setExistingApplication(null);
         }
       } catch (error) {
-        // No existing application
         setExistingApplication(null);
-      } finally {
-        setCheckingStatus(false);
       }
     };
 
@@ -87,6 +93,7 @@ const ApplyTrainer = ({ user }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -101,8 +108,12 @@ const ApplyTrainer = ({ user }) => {
 
       if (response.success) {
         setSuccessMessage(response.message);
-        setExistingApplication(response);
-        // Reset form
+
+        // Fetch newly created application
+        const application = await getApplicationByUser(user.id);
+
+        setExistingApplication(application);
+
         setFormData({
           experience: "",
           specialty: "",
@@ -110,10 +121,13 @@ const ApplyTrainer = ({ user }) => {
           certification: "",
           bio: "",
           availability: "Flexible",
+          status: "Pending",
         });
       }
     } catch (error) {
-      setErrorMessage(error.message || "Something went wrong. Please try again.");
+      setErrorMessage(
+        error?.message || "Something went wrong. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -147,29 +161,11 @@ const ApplyTrainer = ({ user }) => {
     }
   };
 
-  if (checkingStatus) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 mb-6 transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">Back</span>
-        </button>
-
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/25">
@@ -187,7 +183,7 @@ const ApplyTrainer = ({ user }) => {
         {/* Success Message */}
         {successMessage && (
           <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-green-800 dark:text-green-200 font-medium">
                 Success!
@@ -202,7 +198,7 @@ const ApplyTrainer = ({ user }) => {
         {/* Error Message */}
         {errorMessage && (
           <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-red-800 dark:text-red-200 font-medium">
                 Error

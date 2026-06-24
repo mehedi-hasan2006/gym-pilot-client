@@ -40,6 +40,7 @@ export function DashboardLayoutSidebar({ user }) {
       { icon: Book, label: "All Classes", href: "/admin/classes" },
       { icon: Plus, label: "Add Post", href: "/add-community-post" },
       { icon: List, label: " Community Post", href: "/community-post" },
+      { icon: List, label: "Applications", href: "/admin/applications" },
       { icon: User, label: "Users", href: "/admin/users" },
     ],
   };
