@@ -37,6 +37,7 @@ import {
   SlidersHorizontal,
   CheckCheck,
   BarChart3,
+  Menu,
 } from "lucide-react";
 import {
   getUsers,
@@ -45,6 +46,7 @@ import {
   deleteUser,
   getUserStats,
 } from "@/lib/user/user";
+import { Avatar } from "@heroui/react";
 
 const ManageUsers = () => {
   const router = useRouter();
@@ -57,12 +59,15 @@ const ManageUsers = () => {
     active: 0,
     blocked: 0,
     admins: 0,
-    trainers: 0,
+    trainners: 0,
     members: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -108,8 +113,8 @@ const ManageUsers = () => {
         setFilteredUsers(usersData);
       }
 
-      if (statsData) {
-        setStats(statsData);
+      if (statsData?.success) {
+        setStats(statsData.data);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -134,7 +139,7 @@ const ManageUsers = () => {
         (user) =>
           user.name?.toLowerCase().includes(searchLower) ||
           user.email?.toLowerCase().includes(searchLower) ||
-          user.role?.toLowerCase().includes(searchLower)
+          user.role?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -181,7 +186,7 @@ const ManageUsers = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedUsers = filteredUsers.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + itemsPerPage,
   );
 
   // Get unique roles for filter
@@ -208,7 +213,7 @@ const ManageUsers = () => {
 
       if (response.success) {
         setSuccessMessage(
-          `${selectedUser.name} has been blocked successfully!`
+          `${selectedUser.name} has been blocked successfully!`,
         );
         fetchUsers();
         closeAllModals();
@@ -235,7 +240,7 @@ const ManageUsers = () => {
 
       if (response.success) {
         setSuccessMessage(
-          `${selectedUser.name} has been unblocked successfully!`
+          `${selectedUser.name} has been unblocked successfully!`,
         );
         fetchUsers();
         closeAllModals();
@@ -259,9 +264,7 @@ const ManageUsers = () => {
       });
 
       if (response.success) {
-        setSuccessMessage(
-          `${selectedUser.name} has been promoted to Admin!`
-        );
+        setSuccessMessage(`${selectedUser.name} has been promoted to Admin!`);
         fetchUsers();
         closeAllModals();
       }
@@ -284,9 +287,7 @@ const ManageUsers = () => {
       });
 
       if (response.success) {
-        setSuccessMessage(
-          `${selectedUser.name} has been demoted to Member!`
-        );
+        setSuccessMessage(`${selectedUser.name} has been demoted to Member!`);
         fetchUsers();
         closeAllModals();
       }
@@ -308,7 +309,7 @@ const ManageUsers = () => {
 
       if (response.success) {
         setSuccessMessage(
-          `${selectedUser.name} has been deleted successfully!`
+          `${selectedUser.name} has been deleted successfully!`,
         );
         fetchUsers();
         closeAllModals();
@@ -360,7 +361,7 @@ const ManageUsers = () => {
     link.setAttribute("href", encodedUri);
     link.setAttribute(
       "download",
-      `users_${new Date().toISOString().split("T")[0]}.csv`
+      `users_${new Date().toISOString().split("T")[0]}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -376,11 +377,11 @@ const ManageUsers = () => {
           "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
         label: "Admin",
       },
-      trainer: {
+      trainner: {
         icon: UserCog,
         className:
           "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-        label: "Trainer",
+        label: "Trainner",
       },
       member: {
         icon: UserCircle,
@@ -395,10 +396,10 @@ const ManageUsers = () => {
 
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${config.className}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${config.className}`}
       >
-        <Icon className="w-3.5 h-3.5" />
-        {config.label}
+        <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+        <span className="hidden sm:inline">{config.label}</span>
       </span>
     );
   };
@@ -431,10 +432,10 @@ const ManageUsers = () => {
 
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${config.className}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${config.className}`}
       >
-        <Icon className="w-3.5 h-3.5" />
-        {config.label}
+        <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+        <span className="hidden sm:inline">{config.label}</span>
       </span>
     );
   };
@@ -442,7 +443,7 @@ const ManageUsers = () => {
   // Loading state
   if (loading && users.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400 text-lg">
@@ -455,32 +456,32 @@ const ManageUsers = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                 User Management
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                 Manage all registered users, roles, and permissions
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <button
                 onClick={handleExport}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
               >
                 <Download className="w-4 h-4" />
-                Export CSV
+                <span className="hidden sm:inline">Export CSV</span>
               </button>
               <button
                 onClick={fetchUsers}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                Refresh
+                <span className="hidden sm:inline">Refresh</span>
               </button>
             </div>
           </div>
@@ -488,143 +489,145 @@ const ManageUsers = () => {
 
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-start gap-3 animate-fadeIn">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-start gap-3 animate-fadeIn">
             <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-green-800 dark:text-green-200 font-medium">
+              <p className="text-sm sm:text-base text-green-800 dark:text-green-200 font-medium">
                 {successMessage}
               </p>
             </div>
             <button
               onClick={() => setSuccessMessage("")}
-              className="text-green-500 hover:text-green-700"
+              className="text-green-500 hover:text-green-700 p-1"
             >
-              ×
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-red-800 dark:text-red-200 font-medium">
+              <p className="text-sm sm:text-base text-red-800 dark:text-red-200 font-medium">
                 Error
               </p>
-              <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+              <p className="text-xs sm:text-sm text-red-700 dark:text-red-300">
+                {error}
+              </p>
             </div>
             <button
               onClick={() => setError(null)}
-              className="text-red-500 hover:text-red-700"
+              className="text-red-500 hover:text-red-700 p-1"
             >
-              ×
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        {/* Statistics Cards - Responsive Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Total Users
                 </p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1">
                   {stats.total}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Active
                 </p>
-                <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
+                <p className="text-lg sm:text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                   {stats.active}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Blocked
                 </p>
-                <p className="text-xl font-bold text-red-600 dark:text-red-400 mt-1">
-                  {stats.blocked}
+                <p className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-400 mt-1">
+                  {stats.blocked || 0}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-                <Ban className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                <Ban className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Admins
                 </p>
-                <p className="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">
+                <p className="text-lg sm:text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">
                   {stats.admins}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                <ShieldAlert className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Trainers
+                  Trainners
                 </p>
-                <p className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-1">
-                  {stats.trainers}
+                <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+                  {stats.trainners}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <UserCog className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <UserCog className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Members
                 </p>
-                <p className="text-xl font-bold text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-lg sm:text-xl font-bold text-gray-600 dark:text-gray-400 mt-1">
                   {stats.members}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <UserCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                <UserCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -633,68 +636,71 @@ const ManageUsers = () => {
                 placeholder="Search by name, email, or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
               />
             </div>
 
-            {/* Role Filter */}
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
-            >
-              <option value="All">All Roles</option>
-              {roles.map((role) => (
-                <option key={role} value={role}>
-                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              {/* Role Filter */}
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 sm:px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
+              >
+                <option value="All">All Roles</option>
+                {roles.map((role) => (
+                  <option key={role} value={role}>
+                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                  </option>
+                ))}
+              </select>
 
-            {/* Status Filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
-            >
-              <option value="All">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Blocked">Blocked</option>
-              <option value="Suspended">Suspended</option>
-            </select>
+              {/* Status Filter */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 sm:px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
+              >
+                <option value="All">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Suspended">Suspended</option>
+              </select>
 
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="name-asc">Name A-Z</option>
-              <option value="name-desc">Name Z-A</option>
-              <option value="email-asc">Email A-Z</option>
-              <option value="email-desc">Email Z-A</option>
-            </select>
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 sm:px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+                <option value="email-asc">Email A-Z</option>
+                <option value="email-desc">Email Z-A</option>
+              </select>
 
-            {/* Advanced Filters Toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-gray-700 dark:text-gray-300"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              {showFilters ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
+              {/* Advanced Filters Toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-gray-700 dark:text-gray-300"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span className="hidden sm:inline">Filters</span>
+                {showFilters ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Advanced Filters */}
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Items Per Page
@@ -705,7 +711,7 @@ const ManageUsers = () => {
                       setItemsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100"
                   >
                     <option value={5}>5 per page</option>
                     <option value={10}>10 per page</option>
@@ -722,7 +728,7 @@ const ManageUsers = () => {
                       setStatusFilter("All");
                       setSortBy("newest");
                     }}
-                    className="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    className="w-full px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                   >
                     Clear All Filters
                   </button>
@@ -732,9 +738,121 @@ const ManageUsers = () => {
           )}
         </div>
 
-        {/* Users Table */}
+        {/* Users Table - Responsive */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View (shown on small screens) */}
+          <div className="block lg:hidden">
+            {paginatedUsers.length === 0 ? (
+              <div className="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-lg font-medium">No users found</p>
+                <p className="text-sm">
+                  {searchTerm || roleFilter !== "All" || statusFilter !== "All"
+                    ? "Try adjusting your filters"
+                    : "No users registered yet"}
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                {paginatedUsers.map((user) => (
+                  <div
+                    key={user._id}
+                    className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                          {user.name?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white text-sm">
+                            {user.name}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {getRoleBadge(user.role)}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getStatusBadge(user.status)}
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(user.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                            },
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowDetailModal(true);
+                          }}
+                          className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        {user.status === "Active" ||
+                        user.status === "Suspended" ? (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowBlockModal(true);
+                            }}
+                            className="p-2 text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                            title="Block User"
+                          >
+                            <Ban className="w-4 h-4" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowUnblockModal(true);
+                            }}
+                            className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                            title="Unblock User"
+                          >
+                            <UserCheck className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowDeleteModal(true);
+                          }}
+                          className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title="Delete User"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    {user.blockReason && user.status === "Blocked" && (
+                      <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <p className="text-xs text-red-600 dark:text-red-400">
+                          Blocked: {user.blockReason.substring(0, 50)}
+                          {user.blockReason.length > 50 ? "..." : ""}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View (hidden on small screens) */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
@@ -768,7 +886,9 @@ const ManageUsers = () => {
                       <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
                       <p className="text-lg font-medium">No users found</p>
                       <p className="text-sm">
-                        {searchTerm || roleFilter !== "All" || statusFilter !== "All"
+                        {searchTerm ||
+                        roleFilter !== "All" ||
+                        statusFilter !== "All"
                           ? "Try adjusting your filters"
                           : "No users registered yet"}
                       </p>
@@ -782,15 +902,23 @@ const ManageUsers = () => {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                            {user.name?.charAt(0)?.toUpperCase() || "?"}
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                            <Avatar>
+                              <Avatar.Image
+                                alt={user?.name}
+                                src={user?.image}
+                              />
+                              <Avatar.Fallback>
+                                {user?.name?.charAt(0) || "U"}
+                              </Avatar.Fallback>
+                            </Avatar>
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-white">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 dark:text-white truncate">
                               {user.name}
                             </p>
                             {user.blockReason && user.status === "Blocked" && (
-                              <p className="text-xs text-red-500 dark:text-red-400 mt-0.5">
+                              <p className="text-xs text-red-500 dark:text-red-400 mt-0.5 truncate">
                                 Blocked: {user.blockReason.substring(0, 30)}
                                 {user.blockReason.length > 30 ? "..." : ""}
                               </p>
@@ -800,19 +928,19 @@ const ManageUsers = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-600 dark:text-gray-300">
+                          <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <span className="text-gray-600 dark:text-gray-300 truncate">
                             {user.email}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {getRoleBadge(user.role)}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(user.status)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                         {new Date(user.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
@@ -834,7 +962,8 @@ const ManageUsers = () => {
                           </button>
 
                           {/* Block/Unblock Button */}
-                          {user.status === "Active" || user.status === "Suspended" ? (
+                          {user.status === "Active" ||
+                          user.status === "Suspended" ? (
                             <button
                               onClick={() => {
                                 setSelectedUser(user);
@@ -905,53 +1034,65 @@ const ManageUsers = () => {
 
           {/* Pagination */}
           {filteredUsers.length > itemsPerPage && (
-            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
                 Showing {startIndex + 1} to{" "}
                 {Math.min(startIndex + itemsPerPage, filteredUsers.length)} of{" "}
                 {filteredUsers.length} users
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
                   }
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                        currentPage === pageNum
-                          ? "bg-blue-600 text-white"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
+                  disabled={currentPage === 1}
+                  className="p-1.5 sm:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+
+                {/* Page Numbers - Hide some on mobile */}
+                <div className="hidden sm:flex items-center gap-1">
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-sm font-medium transition-colors ${
+                          currentPage === pageNum
+                            ? "bg-blue-600 text-white"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Mobile Page Indicator */}
+                <span className="sm:hidden text-sm font-medium text-gray-600 dark:text-gray-400 px-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+
                 <button
                   onClick={() =>
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                   }
                   disabled={currentPage === totalPages}
-                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="p-1.5 sm:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
@@ -959,12 +1100,12 @@ const ManageUsers = () => {
         </div>
       </div>
 
-      {/* Detail Modal */}
+      {/* Detail Modal - Responsive */}
       {showDetailModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 w-full h-full sm:rounded-2xl sm:shadow-2xl sm:w-full sm:max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 User Details
               </h3>
               <button
@@ -974,55 +1115,55 @@ const ManageUsers = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold flex-shrink-0">
                   {selectedUser.name?.charAt(0)?.toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                     {selectedUser.name}
                   </h4>
-                  <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center sm:justify-start gap-2 mt-1">
                     <Mail className="w-4 h-4" />
                     {selectedUser.email}
                   </p>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                     {getRoleBadge(selectedUser.role)}
                     {getStatusBadge(selectedUser.status)}
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">
                     User ID
                   </p>
-                  <p className="font-mono text-sm text-gray-900 dark:text-white">
+                  <p className="font-mono text-xs sm:text-sm text-gray-900 dark:text-white truncate">
                     {selectedUser._id}
                   </p>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">
                     Joined Date
                   </p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
                     {new Date(selectedUser.createdAt).toLocaleDateString(
                       "en-US",
                       {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
-                      }
+                      },
                     )}
                   </p>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">
                     Last Active
                   </p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
                     {selectedUser.lastActive
                       ? new Date(selectedUser.lastActive).toLocaleDateString(
                           "en-US",
@@ -1032,27 +1173,27 @@ const ManageUsers = () => {
                             day: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
-                          }
+                          },
                         )
                       : "Never"}
                   </p>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">
                     Account Status
                   </p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {selectedUser.status}
+                  <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
+                    {selectedUser.status || "Active"}
                   </p>
                 </div>
               </div>
 
               {selectedUser.blockReason && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-1">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium mb-1">
                     Block Reason
                   </p>
-                  <p className="text-red-700 dark:text-red-300">
+                  <p className="text-sm text-red-700 dark:text-red-300">
                     {selectedUser.blockReason}
                   </p>
                   {selectedUser.blockedAt && (
@@ -1064,33 +1205,22 @@ const ManageUsers = () => {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        }
+                        },
                       )}
                     </p>
                   )}
                 </div>
               )}
-
-              {selectedUser.notes && (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                  <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium mb-1">
-                    Admin Notes
-                  </p>
-                  <p className="text-yellow-700 dark:text-yellow-300">
-                    {selectedUser.notes}
-                  </p>
-                </div>
-              )}
             </div>
 
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-3">
+            <div className="sticky bottom-0 bg-white dark:bg-gray-800 p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
               {selectedUser.status !== "Blocked" ? (
                 <button
                   onClick={() => {
                     setShowDetailModal(false);
                     setShowBlockModal(true);
                   }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors w-full sm:w-auto"
                 >
                   <Ban className="w-4 h-4" />
                   Block User
@@ -1101,7 +1231,7 @@ const ManageUsers = () => {
                     setShowDetailModal(false);
                     setShowUnblockModal(true);
                   }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors w-full sm:w-auto"
                 >
                   <UserCheck className="w-4 h-4" />
                   Unblock User
@@ -1114,7 +1244,7 @@ const ManageUsers = () => {
                     setShowDetailModal(false);
                     setShowMakeAdminModal(true);
                   }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors w-full sm:w-auto"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   Make Admin
@@ -1125,7 +1255,7 @@ const ManageUsers = () => {
                     setShowDetailModal(false);
                     setShowRemoveAdminModal(true);
                   }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors w-full sm:w-auto"
                 >
                   <ShieldOff className="w-4 h-4" />
                   Remove Admin
@@ -1134,7 +1264,7 @@ const ManageUsers = () => {
 
               <button
                 onClick={closeAllModals}
-                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex-1 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors w-full sm:w-auto mt-2 sm:mt-0"
               >
                 Close
               </button>
@@ -1143,12 +1273,12 @@ const ManageUsers = () => {
         </div>
       )}
 
-      {/* Block User Modal */}
+      {/* Block User Modal - Responsive */}
       {showBlockModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 w-full h-full sm:rounded-2xl sm:shadow-2xl sm:w-full sm:max-w-md sm:h-auto">
+            <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Ban className="w-5 h-5 text-orange-500" />
                 Block User
               </h3>
@@ -1159,12 +1289,12 @@ const ManageUsers = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 sm:p-4">
                 <p className="text-sm text-orange-800 dark:text-orange-200">
-                  You are about to block{" "}
-                  <strong>{selectedUser.name}</strong> ({selectedUser.email}).
-                  They will no longer be able to access the platform.
+                  You are about to block <strong>{selectedUser.name}</strong> (
+                  {selectedUser.email}). They will no longer be able to access
+                  the platform.
                 </p>
               </div>
               <div>
@@ -1182,7 +1312,7 @@ const ManageUsers = () => {
                   rows="4"
                   maxLength="500"
                   placeholder="Provide a reason for blocking this user (minimum 10 characters)..."
-                  className={`w-full px-4 py-2.5 bg-white dark:bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 text-gray-900 dark:text-gray-100 resize-none ${
+                  className={`w-full px-4 py-2.5 text-sm bg-white dark:bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 text-gray-900 dark:text-gray-100 resize-none ${
                     blockErrors.reason
                       ? "border-red-500"
                       : "border-gray-200 dark:border-gray-600"
@@ -1198,14 +1328,13 @@ const ManageUsers = () => {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex gap-3">
+            <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={handleBlockUser}
                 disabled={processingId === selectedUser._id}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
               >
-                {processingId === selectedUser._id &&
-                actionType === "block" ? (
+                {processingId === selectedUser._id && actionType === "block" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <Ban className="w-4 h-4" />
@@ -1214,7 +1343,7 @@ const ManageUsers = () => {
               </button>
               <button
                 onClick={closeAllModals}
-                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex-1 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
@@ -1223,29 +1352,29 @@ const ManageUsers = () => {
         </div>
       )}
 
-      {/* Unblock User Modal */}
+      {/* Unblock User Modal - Responsive */}
       {showUnblockModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 w-full h-full sm:rounded-2xl sm:shadow-2xl sm:w-full sm:max-w-md sm:h-auto flex items-center">
+            <div className="p-4 sm:p-6 w-full">
               <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white text-center mb-2">
                 Unblock User
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center mb-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-2">
                 Are you sure you want to unblock{" "}
                 <strong>{selectedUser.name}</strong>?
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
                 They will regain full access to the platform.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={handleUnblockUser}
                   disabled={processingId === selectedUser._id}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                 >
                   {processingId === selectedUser._id &&
                   actionType === "unblock" ? (
@@ -1257,7 +1386,7 @@ const ManageUsers = () => {
                 </button>
                 <button
                   onClick={closeAllModals}
-                  className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1267,29 +1396,29 @@ const ManageUsers = () => {
         </div>
       )}
 
-      {/* Make Admin Modal */}
+      {/* Make Admin Modal - Responsive */}
       {showMakeAdminModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 w-full h-full sm:rounded-2xl sm:shadow-2xl sm:w-full sm:max-w-md sm:h-auto flex items-center">
+            <div className="p-4 sm:p-6 w-full">
               <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ShieldCheck className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white text-center mb-2">
                 Make Admin
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center mb-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-2">
                 Are you sure you want to promote{" "}
                 <strong>{selectedUser.name}</strong> to Admin?
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
                 They will have full administrative access to the platform.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={handleMakeAdmin}
                   disabled={processingId === selectedUser._id}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
                 >
                   {processingId === selectedUser._id &&
                   actionType === "makeAdmin" ? (
@@ -1301,7 +1430,7 @@ const ManageUsers = () => {
                 </button>
                 <button
                   onClick={closeAllModals}
-                  className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1311,29 +1440,29 @@ const ManageUsers = () => {
         </div>
       )}
 
-      {/* Remove Admin Modal */}
+      {/* Remove Admin Modal - Responsive */}
       {showRemoveAdminModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 w-full h-full sm:rounded-2xl sm:shadow-2xl sm:w-full sm:max-w-md sm:h-auto flex items-center">
+            <div className="p-4 sm:p-6 w-full">
               <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ShieldOff className="w-6 h-6 text-gray-600 dark:text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white text-center mb-2">
                 Remove Admin
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center mb-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-2">
                 Are you sure you want to remove admin privileges from{" "}
                 <strong>{selectedUser.name}</strong>?
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
                 They will be demoted to a standard member role.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={handleRemoveAdmin}
                   disabled={processingId === selectedUser._id}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
                 >
                   {processingId === selectedUser._id &&
                   actionType === "removeAdmin" ? (
@@ -1345,7 +1474,7 @@ const ManageUsers = () => {
                 </button>
                 <button
                   onClick={closeAllModals}
-                  className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1355,30 +1484,30 @@ const ManageUsers = () => {
         </div>
       )}
 
-      {/* Delete User Modal */}
+      {/* Delete User Modal - Responsive */}
       {showDeleteModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 w-full h-full sm:rounded-2xl sm:shadow-2xl sm:w-full sm:max-w-md sm:h-auto flex items-center">
+            <div className="p-4 sm:p-6 w-full">
               <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white text-center mb-2">
                 Delete User
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center mb-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-2">
                 Are you sure you want to permanently delete{" "}
                 <strong>{selectedUser.name}</strong>?
               </p>
-              <p className="text-sm text-red-500 dark:text-red-400 text-center mb-6">
+              <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 text-center mb-6">
                 This action cannot be undone. All associated data will be
                 permanently removed.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={handleDeleteUser}
                   disabled={processingId === selectedUser._id}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   {processingId === selectedUser._id &&
                   actionType === "delete" ? (
@@ -1390,7 +1519,7 @@ const ManageUsers = () => {
                 </button>
                 <button
                   onClick={closeAllModals}
-                  className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
