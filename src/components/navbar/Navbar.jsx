@@ -4,14 +4,7 @@ import { Link, Button, Avatar } from "@heroui/react";
 import logo from "../../../public/images/logo.png";
 import Image from "next/image";
 import { authClient, useSession } from "@/lib/auth-client";
-import {
-  Dumbbell,
-  ChevronDown,
-  Menu,
-  X,
-  Zap,
-  LayoutDashboard,
-} from "lucide-react";
+import { Menu, X, Zap, LayoutDashboard } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -82,7 +75,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative">
-                <div className="absolute -inset-1 bg-linear-to-r from-orange-500 to-red-600 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
+                <div className="absolute -inset-1 bg-linear-to-r from-blue-500 to-blue-600 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
                 <Image
                   src={logo}
                   alt="GymPilot Logo"
@@ -92,8 +85,8 @@ export default function Navbar() {
                   className="relative h-11 w-11 rounded-full"
                 />
               </div>
-              <span className="text-2xl font-black bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent hidden sm:block">
-                GYMPILOT
+              <span className="text-2xl font-bold text-white">
+                GYM<span className="text-blue-500">PILOT</span>
               </span>
             </Link>
           </div>
@@ -165,12 +158,12 @@ export default function Navbar() {
                   Sign In
                 </Link>
                 <Link href="/signup">
-                  <Button className="relative group bg-linear-to-r from-orange-500 to-red-500 text-white rounded-full px-6 py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200">
+                  <Button className="relative group bg-linear-to-r from-blue-500 to-blue-500 text-white rounded-full px-6 py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200">
                     <span className="relative z-10 flex items-center gap-2">
                       <Zap className="w-4 h-4" />
                       Start Free Trial
                     </span>
-                    <div className="absolute inset-0 bg-linear-to-r from-orange-600 to-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-blue-600 to-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                   </Button>
                 </Link>
               </div>
