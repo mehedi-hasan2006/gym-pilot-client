@@ -55,7 +55,7 @@ const ClassDetails = ({ id, user, res }) => {
   const checkBookingStatus = async () => {
     try {
       // Check if user has already booked this class
-      const response = await  fetch(
+      const response = await fetch(
         `/api/bookings/check?classId=${id}&userId=${user._id}`,
       );
       const data = await response.json();
@@ -81,37 +81,58 @@ const ClassDetails = ({ id, user, res }) => {
       setCheckingFavorite(false);
     }
   };
+  console.log(user.id);
+  // if (isBooked) {
+  //   toast.danger("You have already booked this class");
+  //   return;
+  // }
 
+  // // Double-check from database
+  // setProcessing(true);
+  // try {
+  // const response = await fetch(
+  //   `/api/bookings/check?classId=${id}&userId=${user._id}`,
+  // );
+  // const data = await response.json();
+
+  // if (data.isBooked) {
+  //   setIsBooked(true);
+  //   toast.danger("You have already booked this class");
+  // } else {
+  //   // Redirect to payment page
+  //   navigate(`/payment/${id}`, {
+  //     state: {
+  //       classData: classData,
+  //     },
+  //   });
+  // }
+  // } catch (error) {
+  //   console.error("Error processing booking:", error);
+  //   toast.danger("Something went wrong. Please try again.");
+  // } finally {
+  //   setProcessing(false);
+  // }
   const handleBookNow = async () => {
-    if (isBooked) {
-      toast.danger("You have already booked this class");
-      return;
-    }
+    const paymentData = {
+      classId: id,
+      className: classData.className,
+      price: classData.price,
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    };
 
-    // Double-check from database
-    setProcessing(true);
-    try {
-      const response = await fetch(
-        `/api/bookings/check?classId=${id}&userId=${user._id}`,
-      );
-      const data = await response.json();
+    const res = await fetch("/api/checkout_sessions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(paymentData),
+    });
+    const data = await res.json();
 
-      if (data.isBooked) {
-        setIsBooked(true);
-        toast.danger("You have already booked this class");
-      } else {
-        // Redirect to payment page
-        navigate(`/payment/${id}`, {
-          state: {
-            classData: classData,
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error processing booking:", error);
-      toast.danger("Something went wrong. Please try again.");
-    } finally {
-      setProcessing(false);
+    if (data.url) {
+      window.location.href = data.url;
     }
   };
 
@@ -231,7 +252,9 @@ const ClassDetails = ({ id, user, res }) => {
               <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800 transition-colors">
                 <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Duration
+                  </p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {classData.duration}
                   </p>
@@ -241,7 +264,9 @@ const ClassDetails = ({ id, user, res }) => {
               <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800 transition-colors">
                 <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Price</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Price
+                  </p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     ${classData.price}
                   </p>
@@ -251,7 +276,9 @@ const ClassDetails = ({ id, user, res }) => {
               <div className="flex items-center space-x-2 bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-100 dark:border-purple-800 transition-colors">
                 <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Trainer</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Trainer
+                  </p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {classData.trainnerName}
                   </p>
@@ -261,7 +288,9 @@ const ClassDetails = ({ id, user, res }) => {
               <div className="flex items-center space-x-2 bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg border border-orange-100 dark:border-orange-800 transition-colors">
                 <Star className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Level</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Level
+                  </p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {classData.difficultyLevel}
                   </p>

@@ -10,7 +10,7 @@ import {
   FileText,
 } from "@gravity-ui/icons";
 import { Avatar, Button, Drawer } from "@heroui/react";
-import { Book, icons, List, User } from "lucide-react";
+import { Book, DollarSign, icons, List, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -22,11 +22,17 @@ export function DashboardLayoutSidebar({ user }) {
       { icon: House, label: "Home", href: "/member/dashboard" },
       { icon: Plus, label: "Add Community Post", href: "/add-community-post" },
       {
-        icon: House,
+        icon: List,
         label: "All Community Post",
         href: "/member/all-community-post",
       },
       { icon: List, label: "Applications", href: "/member/application" },
+      { icon: List, label: "Booked Classes", href: "/member/booked-classes" },
+      {
+        icon: List,
+        label: "Favorite Classes",
+        href: "/member/favorite-classes",
+      },
     ],
     trainner: [
       { icon: House, label: "Home", href: "/trainner/dashboard" },
@@ -41,6 +47,13 @@ export function DashboardLayoutSidebar({ user }) {
       { icon: Plus, label: "Add Post", href: "/add-community-post" },
       { icon: List, label: " Community Post", href: "/community-post" },
       { icon: List, label: "Manage Applications", href: "/admin/applications" },
+      {
+        icon: List,
+        label: "Manage Trainners",
+        href: "/admin/manage-trainners",
+      },
+      { icon: List, label: "Manage Posts", href: "/admin/manage-posts" },
+      { icon: DollarSign, label: "Transaction", href: "/admin/transactions" },
       { icon: User, label: "Mange Users", href: "/admin/users" },
     ],
   };

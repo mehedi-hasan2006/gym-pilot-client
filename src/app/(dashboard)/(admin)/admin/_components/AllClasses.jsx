@@ -194,10 +194,16 @@ export default function AllClasses() {
   // Filter and search classes
   const filteredClasses = classes.filter((classItem) => {
     const matchesSearch =
-      classItem.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.trainnerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.description.toLowerCase().includes(searchTerm.toLowerCase());
-
+      (classItem.className || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (classItem.trainnerName || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (classItem.description || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+        
     const matchesStatus =
       statusFilter === "All" || classItem.status === statusFilter;
     const matchesCategory =

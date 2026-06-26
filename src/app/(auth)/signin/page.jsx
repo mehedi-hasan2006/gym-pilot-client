@@ -96,7 +96,7 @@ export default function Login() {
       {
         email,
         password,
-        callbackURL: "/dashboard",
+        callbackURL: "/",
       },
       {
         onSuccess: (res) => {

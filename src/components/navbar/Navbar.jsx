@@ -4,7 +4,14 @@ import { Link, Button, Avatar } from "@heroui/react";
 import logo from "../../../public/images/logo.png";
 import Image from "next/image";
 import { authClient, useSession } from "@/lib/auth-client";
-import { Dumbbell, ChevronDown, Menu, X, Zap } from "lucide-react";
+import {
+  Dumbbell,
+  ChevronDown,
+  Menu,
+  X,
+  Zap,
+  LayoutDashboard,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -115,7 +122,7 @@ export default function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-3">
-            {user ? (
+            {user && (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10">
                   <div className="w-8 h-8 rounded-full bg-linear-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold text-sm">
@@ -130,6 +137,16 @@ export default function Navbar() {
                     {user?.name}
                   </span>
                 </div>
+
+                <div className=" bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 rounded-full px-6 py-2 text-sm font-medium transition-all duration-200">
+                  <Link href={`${user?.role}/dashboard`}>
+                    <button className="flex gap-1.5 items-center">
+                      <LayoutDashboard />
+                      <p className="">Dashboard</p>
+                    </button>
+                  </Link>
+                </div>
+
                 <Button
                   onClick={handleLogout}
                   className="bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 rounded-full px-6 py-2 text-sm font-medium transition-all duration-200"
@@ -137,7 +154,9 @@ export default function Navbar() {
                   Sign Out
                 </Button>
               </div>
-            ) : (
+            )}
+
+            {!user && (
               <div className="flex items-center gap-3">
                 <Link
                   href="/signin"
