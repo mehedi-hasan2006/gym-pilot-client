@@ -15,6 +15,7 @@ import { getApprovedClassById } from "@/lib/class/class";
 import { useRouter } from "next/navigation";
 import { toast } from "@heroui/react";
 import Link from "next/link";
+import { bookClass } from "@/lib/booking/booking";
 
 const ClassDetails = ({ id, user, res }) => {
   const navigate = useRouter();
@@ -56,7 +57,7 @@ const ClassDetails = ({ id, user, res }) => {
     try {
       // Check if user has already booked this class
       const response = await fetch(
-        `/api/bookings/check?classId=${id}&userId=${user._id}`,
+        `/api/bookings/check?classId=${id}&userId=${user.id}`,
       );
       const data = await response.json();
       setIsBooked(data.isBooked);
@@ -81,38 +82,13 @@ const ClassDetails = ({ id, user, res }) => {
       setCheckingFavorite(false);
     }
   };
-  console.log(user.id);
-  // if (isBooked) {
-  //   toast.danger("You have already booked this class");
-  //   return;
-  // }
 
-  // // Double-check from database
-  // setProcessing(true);
-  // try {
-  // const response = await fetch(
-  //   `/api/bookings/check?classId=${id}&userId=${user._id}`,
-  // );
-  // const data = await response.json();
-
-  // if (data.isBooked) {
-  //   setIsBooked(true);
-  //   toast.danger("You have already booked this class");
-  // } else {
-  //   // Redirect to payment page
-  //   navigate(`/payment/${id}`, {
-  //     state: {
-  //       classData: classData,
-  //     },
-  //   });
-  // }
-  // } catch (error) {
-  //   console.error("Error processing booking:", error);
-  //   toast.danger("Something went wrong. Please try again.");
-  // } finally {
-  //   setProcessing(false);
-  // }
   const handleBookNow = async () => {
+    if (isBooked) {
+      toast.danger("You have already booked this class");
+      return;
+    }
+
     const paymentData = {
       classId: id,
       className: classData.className,
@@ -133,6 +109,28 @@ const ClassDetails = ({ id, user, res }) => {
 
     if (data.url) {
       window.location.href = data.url;
+    }
+  };
+
+  const handleBook = async () => {
+    try {
+      const response = await bookClass(id, {
+        userId: user.id,
+        classId: id,
+        userName: user.name,
+        email: user.email,
+      });
+
+      if (response.success) {
+        toast.success(response.message, "success");
+
+        handleBookNow();
+      }
+    } catch (error) {
+      showToast(
+        error.message || "You have already booked this class.",
+        "error",
+      );
     }
   };
 
