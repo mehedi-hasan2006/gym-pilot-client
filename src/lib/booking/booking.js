@@ -20,3 +20,7 @@ export const getFavoriteClasses = async (userId) => {
 export const getClassBookings = (classId) => {
   return serverFetch(`/api/bookings/class/${classId}`);
 };
+
+export const getUserBookings = (userId) => {
+  return serverFetch(`/api/bookings/user/${userId}`);
+};
