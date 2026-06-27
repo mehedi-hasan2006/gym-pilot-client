@@ -10,12 +10,18 @@ import {
   ArrowLeft,
   CheckCircle,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { getApprovedClassById } from "@/lib/class/class";
 import { useRouter } from "next/navigation";
 import { toast } from "@heroui/react";
 import Link from "next/link";
-import { bookClass } from "@/lib/booking/booking";
+import {
+  bookClass,
+  getBookingStatus,
+  getFavoriteClasses,
+} from "@/lib/booking/booking";
+import { toggleFavorite } from "@/lib/user/user";
 
 const ClassDetails = ({ id, user, res }) => {
   const navigate = useRouter();
@@ -23,10 +29,11 @@ const ClassDetails = ({ id, user, res }) => {
   const [classData, setClassData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBooked, setIsBooked] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [checkingBooking, setCheckingBooking] = useState(true);
-  const [checkingFavorite, setCheckingFavorite] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [togglingIds, setTogglingIds] = useState([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(true);
 
   useEffect(() => {
     fetchClassDetails();
@@ -35,151 +42,161 @@ const ClassDetails = ({ id, user, res }) => {
   useEffect(() => {
     if (classData && user) {
       checkBookingStatus();
-      checkFavoriteStatus();
     }
   }, [classData, user]);
 
+  useEffect(() => {
+    if (user?.id) {
+      loadFavorites();
+    }
+  }, [user]);
+
+  const loadFavorites = async () => {
+    try {
+      setLoadingFavorites(true);
+      const res = await getFavoriteClasses(user.id);
+
+      if (res.success) {
+        // Extract class IDs from favorites
+        const ids = res.data.map((item) => item._id || item.classId);
+        setFavorites(ids);
+      }
+    } catch (error) {
+      console.error("Error loading favorites:", error);
+      setFavorites([]);
+    } finally {
+      setLoadingFavorites(false);
+    }
+  };
+
   const fetchClassDetails = async () => {
     try {
-      //  actual API
       const data = res;
-
       setClassData(data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching class details:", error);
-      toast.danger("Failed to load class details");
+      toast.error("Failed to load class details");
       setLoading(false);
     }
   };
 
   const checkBookingStatus = async () => {
     try {
-      // Check if user has already booked this class
-      const response = await fetch(
-        `/api/bookings/check?classId=${id}&userId=${user.id}`,
-      );
-      const data = await response.json();
-      setIsBooked(data.isBooked);
-      setCheckingBooking(false);
+      const bookStatus = await getBookingStatus(user.id, id);
+      setIsBooked(bookStatus.isBooked);
     } catch (error) {
       console.error("Error checking booking status:", error);
+    } finally {
       setCheckingBooking(false);
-    }
-  };
-
-  const checkFavoriteStatus = async () => {
-    try {
-      // Check if class is in user's favorites
-      const response = await fetch(
-        `/api/favorites/check?classId=${id}&userId=${user._id}`,
-      );
-      const data = await response.json();
-      setIsFavorite(data.isFavorite);
-      setCheckingFavorite(false);
-    } catch (error) {
-      console.error("Error checking favorite status:", error);
-      setCheckingFavorite(false);
     }
   };
 
   const handleBookNow = async () => {
     if (isBooked) {
-      toast.danger("You have already booked this class");
+      toast.error("You have already booked this class");
       return;
     }
 
-    const paymentData = {
-      classId: id,
-      className: classData.className,
-      price: classData.price,
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-    };
-
-    const res = await fetch("/api/checkout_sessions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(paymentData),
-    });
-    const data = await res.json();
-
-    if (data.url) {
-      window.location.href = data.url;
+    if (!user?.id) {
+      toast.error("Please login first");
+      return;
     }
-  };
 
-  const handleBook = async () => {
+    setProcessing(true);
+
     try {
-      const response = await bookClass(id, {
+      // First, create the booking
+      const bookingResponse = await bookClass(id, {
         userId: user.id,
         classId: id,
         userName: user.name,
         email: user.email,
       });
 
-      if (response.success) {
-        toast.success(response.message, "success");
-
-        handleBookNow();
+      if (!bookingResponse.success) {
+        toast.error(bookingResponse.message || "Failed to create booking");
+        setProcessing(false);
+        return;
       }
-    } catch (error) {
-      showToast(
-        error.message || "You have already booked this class.",
-        "error",
-      );
-    }
-  };
 
-  const handleToggleFavorite = async () => {
-    setProcessing(true);
-    try {
-      if (isFavorite) {
-        // Remove from favorites
-        const response = await fetch("/api/favorites/remove", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            classId: id,
-            userId: user._id,
-          }),
-        });
+      toast.success("Booking created successfully!");
 
-        if (response.ok) {
-          setIsFavorite(false);
-          toast.success("Removed from favorites");
-        }
+      // Then proceed to payment
+      const paymentData = {
+        classId: id,
+        className: classData.className,
+        price: classData.price,
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+      };
+
+      const res = await fetch("/api/checkout_sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
       } else {
-        // Add to favorites
-        const response = await fetch("/api/favorites/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            classId: id,
-            userId: user._id,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setIsFavorite(true);
-          toast.success("Successfully added to your favorites!");
-        } else if (data.message === "Already in favorites") {
-          setIsFavorite(true);
-          toast.danger("This class is already in your favorites");
-        }
+        toast.error("Failed to create payment session");
       }
     } catch (error) {
-      console.error("Error updating favorites:", error);
-      toast.danger("Failed to update favorites");
+      console.error("Booking error:", error);
+      toast.error(error.message || "You have already booked this class.");
     } finally {
       setProcessing(false);
     }
   };
+
+  const handleToggleFavorite = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user?.id) {
+      toast.error("Please login first");
+      return;
+    }
+
+    const classId = classData._id || id;
+
+    // Prevent multiple clicks
+    if (togglingIds.includes(classId)) return;
+
+    setTogglingIds((prev) => [...prev, classId]);
+
+    try {
+      const response = await toggleFavorite(classId, user.id);
+
+      if (!response.success) {
+        toast.error(response.message || "Failed to update favorite");
+        return;
+      }
+
+      // Update favorites state
+      setFavorites((prev) => {
+        if (prev.includes(classId)) {
+          return prev.filter((favId) => favId !== classId);
+        }
+        return [...prev, classId];
+      });
+
+      toast.success(response.message || "Favorites updated successfully");
+    } catch (error) {
+      console.error("Favorite Error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setTogglingIds((prev) => prev.filter((favId) => favId !== classId));
+    }
+  };
+
+  const isFavorite = (classId) => favorites.includes(classId);
 
   if (loading) {
     return (
@@ -207,6 +224,8 @@ const ClassDetails = ({ id, user, res }) => {
     );
   }
 
+  const classId = classData._id || id;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-4xl mx-auto">
@@ -227,7 +246,32 @@ const ClassDetails = ({ id, user, res }) => {
               alt={classData.className}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent"></div>
+
+            {/* Favorite Button on Image */}
+            <button
+              onClick={handleToggleFavorite}
+              disabled={togglingIds.includes(classId) || loadingFavorites}
+              className="absolute top-4 right-4 p-2.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-lg hover:scale-110 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed z-10"
+              title={
+                isFavorite(classId)
+                  ? "Remove from favorites"
+                  : "Add to favorites"
+              }
+            >
+              {togglingIds.includes(classId) ? (
+                <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
+              ) : (
+                <Heart
+                  className={`w-6 h-6 transition-all duration-300 ${
+                    isFavorite(classId)
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-600 hover:text-red-500"
+                  }`}
+                />
+              )}
+            </button>
+
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 drop-shadow-lg">
                 {classData.className}
@@ -246,54 +290,49 @@ const ClassDetails = ({ id, user, res }) => {
           {/* Details Section */}
           <div className="p-6 sm:p-8">
             {/* Quick Info Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-              <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800 transition-colors">
-                <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Duration
-                  </p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {classData.duration}
-                  </p>
-                </div>
+            {/* Info Cards + Booking Badge */}
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800">
+                <Clock className="w-4 h-4 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {classData.duration}
+                </span>
               </div>
 
-              <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800 transition-colors">
-                <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Price
-                  </p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    ${classData.price}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-full border border-green-100 dark:border-green-800">
+                <DollarSign className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  ${classData.price}
+                </span>
               </div>
 
-              <div className="flex items-center space-x-2 bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-100 dark:border-purple-800 transition-colors">
-                <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Trainer
-                  </p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {classData.trainnerName}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/20 px-4 py-2 rounded-full border border-purple-100 dark:border-purple-800">
+                <Users className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {classData.trainnerName}
+                </span>
               </div>
 
-              <div className="flex items-center space-x-2 bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg border border-orange-100 dark:border-orange-800 transition-colors">
-                <Star className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Level
-                  </p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {classData.difficultyLevel}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 px-4 py-2 rounded-full border border-orange-100 dark:border-orange-800">
+                <Star className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {classData.difficultyLevel}
+                </span>
               </div>
+
+              {classData.bookingCount > 0 && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white px-4 py-2 rounded-full shadow-lg shadow-rose-500/25">
+                  <Users className="w-4 h-4" />
+                  <span className="text-sm font-bold">
+                    {classData.bookingCount} Enrolled
+                  </span>
+                  {classData.maxCapacity && (
+                    <span className="text-xs opacity-90">
+                      / {classData.maxCapacity}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Description */}
@@ -375,7 +414,10 @@ const ClassDetails = ({ id, user, res }) => {
                       Already Booked
                     </span>
                   ) : processing ? (
-                    "Processing..."
+                    <span className="flex items-center justify-center">
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      Processing...
+                    </span>
                   ) : (
                     "Book Now"
                   )}
@@ -383,29 +425,39 @@ const ClassDetails = ({ id, user, res }) => {
               )}
 
               {/* Add to Favorites Button */}
-              {!checkingFavorite && (
-                <button
-                  onClick={handleToggleFavorite}
-                  disabled={processing}
-                  className={`
-                    flex-1 py-3 px-6 rounded-lg font-medium text-lg
-                    border-2 transition-all duration-200 transform hover:scale-[1.02]
-                    ${
-                      isFavorite
-                        ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30"
-                        : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    }
-                    disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                  `}
-                >
-                  <span className="flex items-center justify-center">
-                    <Heart
-                      className={`h-5 w-5 mr-2 ${isFavorite ? "fill-current" : ""}`}
-                    />
-                    {isFavorite ? "Saved to Favorites" : "Add to Favorites"}
-                  </span>
-                </button>
-              )}
+              <button
+                onClick={handleToggleFavorite}
+                disabled={togglingIds.includes(classId) || loadingFavorites}
+                className={`
+                  py-3 px-6 rounded-lg font-medium text-lg
+                  transition-all duration-200 transform hover:scale-[1.02]
+                  flex items-center justify-center gap-2
+                  ${
+                    isFavorite(classId)
+                      ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-2 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30"
+                      : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-red-300 dark:hover:border-red-700"
+                  }
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                `}
+                title={
+                  isFavorite(classId)
+                    ? "Remove from favorites"
+                    : "Add to favorites"
+                }
+              >
+                {togglingIds.includes(classId) ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  <Heart
+                    className={`w-6 h-6 transition-all ${
+                      isFavorite(classId) ? "fill-current" : ""
+                    }`}
+                  />
+                )}
+                {isFavorite(classId)
+                  ? "Remove from Favorites"
+                  : "Add to Favorites"}
+              </button>
             </div>
           </div>
         </div>

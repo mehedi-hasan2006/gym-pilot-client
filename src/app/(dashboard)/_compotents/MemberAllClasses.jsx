@@ -15,7 +15,7 @@ const MemberAllClasses = ({ user }) => {
   const [categories, setCategories] = useState([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [togglingIds, setTogglingIds] = useState([]); // Track which favorites are being toggled
-  console.log("User:", user);
+  
   useEffect(() => {
     fetchData();
   }, []);
@@ -52,8 +52,8 @@ const MemberAllClasses = ({ user }) => {
   };
 
   const handleToggleFavorite = async (classId, e) => {
-    e.preventDefault(); // Prevent navigation when clicking heart
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault(); 
+    e.stopPropagation(); 
 
     if (!user?.id) {
       alert("Please log in to save favorites");
