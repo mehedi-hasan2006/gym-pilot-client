@@ -24,6 +24,7 @@ import {
   getAllClasses,
   getClasses,
 } from "@/lib/class/class";
+import { getClassBookings } from "@/lib/booking/booking";
 
 export default function AllClasses() {
   const router = useRouter();
@@ -173,9 +174,7 @@ export default function AllClasses() {
     setLoadingAttendees(true);
 
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch(`/api/classes/${classItem._id}/attendees`);
-      const data = await response.json();
+      const data = await getClassBookings(classItem._id);
 
       if (data.success) {
         setAttendees(data.data);
@@ -203,7 +202,7 @@ export default function AllClasses() {
       (classItem.description || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-        
+
     const matchesStatus =
       statusFilter === "All" || classItem.status === statusFilter;
     const matchesCategory =
@@ -807,14 +806,14 @@ export default function AllClasses() {
                     >
                       <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center">
                         <span className="text-sm font-medium text-violet-400">
-                          {attendee.name?.charAt(0) ||
+                          {attendee.userName?.charAt(0) ||
                             attendee.email?.charAt(0) ||
                             "?"}
                         </span>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-white">
-                          {attendee.name || "Unnamed User"}
+                          {attendee.userName || "Unnamed User"}
                         </p>
                         <p className="text-xs text-zinc-400">
                           {attendee.email}

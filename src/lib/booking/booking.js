@@ -15,3 +15,8 @@ export const getFavoriteClasses = async (userId) => {
 
   return await response.json();
 };
+
+// Booking data for admin
+export const getClassBookings = (classId) => {
+  return serverFetch(`/api/bookings/class/${classId}`);
+};
