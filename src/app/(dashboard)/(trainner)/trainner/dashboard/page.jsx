@@ -1,7 +1,12 @@
-import React from 'react'
+import { sessionData } from "@/lib/session/session";
+import React from "react";
+import TrainerDashboard from "../_components/TrainerDashboard";
 
-export default function TrainnerDashboardPage() {
+export default async function TrainnerDashboardPage() {
+  const user = await sessionData();
   return (
-    <div>TrainnerDashboardPage</div>
-  )
+    <div>
+      <TrainerDashboard user={user} />
+    </div>
+  );
 }

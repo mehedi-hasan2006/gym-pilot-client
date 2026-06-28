@@ -15,3 +15,7 @@ export const updateTrainerStatus = (id, data) => {
 export const getTrainerStats = () => {
   return serverFetch("/api/trainners/stats");
 };
+
+export const getTrainerDashboardStats = (trainerId) => {
+  return serverFetch(`/api/trainers/stats/${trainerId}`);
+};

@@ -76,7 +76,7 @@ const ClassDetails = ({ id, user, res }) => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching class details:", error);
-      toast.error("Failed to load class details");
+      toast.danger("Failed to load class details");
       setLoading(false);
     }
   };
@@ -94,12 +94,12 @@ const ClassDetails = ({ id, user, res }) => {
 
   const handleBookNow = async () => {
     if (isBooked) {
-      toast.error("You have already booked this class");
+      toast.danger("You have already booked this class");
       return;
     }
 
     if (!user?.id) {
-      toast.error("Please login first");
+      toast.danger("Please login first");
       return;
     }
 
@@ -115,7 +115,7 @@ const ClassDetails = ({ id, user, res }) => {
       });
 
       if (!bookingResponse.success) {
-        toast.error(bookingResponse.message || "Failed to create booking");
+        toast.danger(bookingResponse.message || "Failed to create booking");
         setProcessing(false);
         return;
       }
@@ -145,11 +145,11 @@ const ClassDetails = ({ id, user, res }) => {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error("Failed to create payment session");
+        toast.danger("Failed to create payment session");
       }
     } catch (error) {
       console.error("Booking error:", error);
-      toast.error(error.message || "You have already booked this class.");
+      toast.danger(error.message || "You have already booked this class.");
     } finally {
       setProcessing(false);
     }
@@ -160,7 +160,7 @@ const ClassDetails = ({ id, user, res }) => {
     e.stopPropagation();
 
     if (!user?.id) {
-      toast.error("Please login first");
+      toast.danger("Please login first");
       return;
     }
 
@@ -175,7 +175,7 @@ const ClassDetails = ({ id, user, res }) => {
       const response = await toggleFavorite(classId, user.id);
 
       if (!response.success) {
-        toast.error(response.message || "Failed to update favorite");
+        toast.danger(response.message || "Failed to update favorite");
         return;
       }
 
@@ -190,7 +190,7 @@ const ClassDetails = ({ id, user, res }) => {
       toast.success(response.message || "Favorites updated successfully");
     } catch (error) {
       console.error("Favorite Error:", error);
-      toast.error("Something went wrong");
+      toast.danger("Something went wrong");
     } finally {
       setTogglingIds((prev) => prev.filter((favId) => favId !== classId));
     }

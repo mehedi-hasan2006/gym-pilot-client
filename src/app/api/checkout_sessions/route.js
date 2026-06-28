@@ -11,7 +11,6 @@ export async function POST(req) {
     const user = await sessionData();
 
     const body = await req.json();
-    console.log(body);
 
     const lineObj = {
       price_data: {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getApprovedClasses } from "@/lib/class/class";
 import { toggleFavorite, getFavoriteClasses } from "@/lib/user/user";
 import Image from "next/image";
+import { toast } from "@heroui/react";
 
 const MemberAllClasses = ({ user }) => {
   const [classes, setClasses] = useState([]);
@@ -15,7 +16,7 @@ const MemberAllClasses = ({ user }) => {
   const [categories, setCategories] = useState([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [togglingIds, setTogglingIds] = useState([]); // Track which favorites are being toggled
-  
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -52,8 +53,8 @@ const MemberAllClasses = ({ user }) => {
   };
 
   const handleToggleFavorite = async (classId, e) => {
-    e.preventDefault(); 
-    e.stopPropagation(); 
+    e.preventDefault();
+    e.stopPropagation();
 
     if (!user?.id) {
       alert("Please log in to save favorites");
@@ -74,6 +75,7 @@ const MemberAllClasses = ({ user }) => {
           return [...prev, classId];
         }
       });
+      toast.success("Favorites updated successfully");
     } catch (error) {
       console.error("Error toggling favorite:", error);
       alert("Failed to update favorite. Please try again.");

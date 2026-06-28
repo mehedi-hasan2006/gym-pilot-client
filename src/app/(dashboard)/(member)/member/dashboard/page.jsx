@@ -1,7 +1,13 @@
-import React from 'react'
+import { sessionData } from "@/lib/session/session";
+import React from "react";
+import MemberDashboard from "../../_components/MemberDashboard";
 
-export default function MemberDashboardPage() {
+export default async function MemberDashboardPage() {
+  const user = await sessionData();
+
   return (
-    <div>MemberDashboardPage</div>
-  )
+    <div>
+      <MemberDashboard user={user} />
+    </div>
+  );
 }

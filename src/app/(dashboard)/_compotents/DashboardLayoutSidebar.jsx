@@ -20,12 +20,6 @@ export function DashboardLayoutSidebar({ user }) {
   const dashboardItems = {
     member: [
       { icon: House, label: "Home", href: "/member/dashboard" },
-      { icon: Plus, label: "Add Community Post", href: "/add-community-post" },
-      {
-        icon: List,
-        label: "All Community Post",
-        href: "/member/all-community-post",
-      },
       { icon: List, label: "Applications", href: "/member/application" },
       { icon: List, label: "Booked Classes", href: "/member/booked-classes" },
       {
