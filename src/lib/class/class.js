@@ -13,6 +13,10 @@ export const getClasses = async (userId) => {
   return serverFetch(`/api/classes/${userId}`);
 };
 
+export const getFeaturedClasses = () => {
+  return serverFetch("/api/classes/featured");
+};
+
 export const editClass = async (classId, data) => {
   return updateClass("/api/classes/", classId, data);
 };

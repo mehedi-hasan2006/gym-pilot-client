@@ -135,7 +135,7 @@ const CommunityForum = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen -z-50 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Hero Section */}
         <div className="relative mb-12">
@@ -188,7 +188,7 @@ const CommunityForum = () => {
         </div>
 
         {/* Search and Filters Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-8 shadow-sm border border-slate-100 dark:border-gray-700 sticky top-4 z-10 backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-8 shadow-sm border border-slate-100 dark:border-gray-700  z-10 backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Input */}
             <div className="flex-1 relative">

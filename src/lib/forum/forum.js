@@ -18,3 +18,8 @@ export const getForumStats = () => {
 export const reportPost = (id, reportData) => {
   return serverMutation(`/api/posts/report/${id}`, reportData, "PATCH");
 };
+
+// Get Recent Forum Posts
+export const getRecentForumPosts = () => {
+  return serverFetch("/api/posts/recent");
+};
