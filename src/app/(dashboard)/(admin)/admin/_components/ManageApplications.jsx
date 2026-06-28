@@ -1020,7 +1020,10 @@ const ManageApplications = () => {
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
                   <Avatar>
-                    <Avatar.Image alt={selectedApplication?.name} src={selectedApplication?.image} />
+                    <Avatar.Image
+                      alt={selectedApplication?.name}
+                      src={selectedApplication?.image}
+                    />
                     <Avatar.Fallback>
                       {selectedApplication?.name?.charAt(0) || "U"}
                     </Avatar.Fallback>

@@ -516,14 +516,14 @@ const MemberDashboard = ({ user }) => {
                       </div>
                     )}
 
-                  {application.status === "Rejected" && (
+                  {/* {application.status === "Rejected" && (
                     <Link href="/apply-trainer">
                       <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm">
                         <RefreshCw className="w-4 h-4" />
                         Re-apply as Trainer
                       </button>
                     </Link>
-                  )}
+                  )} */}
 
                   <Link href="/member/application">
                     <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium text-sm">
