@@ -18,6 +18,30 @@ export const auth = betterAuth({
       role: {
         default: "member",
       },
+      status: {
+        default: "Active",
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              role: user.role || "member",
+              status: user.status || "Active",
+            },
+          };
+        },
+      },
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
   },
   session: {

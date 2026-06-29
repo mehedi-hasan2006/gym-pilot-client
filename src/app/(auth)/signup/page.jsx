@@ -207,7 +207,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex min-h-screen mt-20 items-center justify-center bg-linear-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+    <div className="flex min-h-screen  items-center justify-center bg-linear-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="bg-white/90 dark:bg-black/90 backdrop-blur-sm border border-white/30 dark:border-gray-800/50 rounded-2xl shadow-2xl p-8 transition-all duration-300">

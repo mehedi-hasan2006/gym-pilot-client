@@ -111,6 +111,13 @@ export default function Login() {
     );
   };
 
+  // Google Sign In Fucntion
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+    });
+  };
+
   return (
     <div className="relative w-full min-h-screen flex items-center justify-center font-sans overflow-hidden">
       {}
@@ -139,6 +146,7 @@ export default function Login() {
           ].map((item, index) => (
             <button
               key={index}
+              onClick={handleGoogleSignIn}
               className="flex items-center w-full gap-3 justify-center h-9 px-3 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
             >
               {item.icon} Sign in with Google
