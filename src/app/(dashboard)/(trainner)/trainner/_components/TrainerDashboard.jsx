@@ -50,7 +50,6 @@ const TrainerDashboard = ({ user }) => {
 
     try {
       const response = await getTrainerDashboardStats(user.id);
-      console.log("Dashboard Stats Response:", response);
 
       // Handle response: { success: true, data: { totalClasses: 8, totalStudents: 57 } }
       if (response?.success && response?.data) {

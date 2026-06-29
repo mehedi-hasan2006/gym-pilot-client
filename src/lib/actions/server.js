@@ -1,11 +1,18 @@
 "use server";
 
+import { headers } from "next/headers";
+import { auth } from "../auth";
+
 const baseURL = process.env.SERVER_URL;
 
 //--------------------------
 //            POST
 //--------------------------
 export const sereverMutation = async (path, data) => {
+  const { token } = await auth.api.getAccessToken({
+    headers: await headers(),
+  });
+  console.log(token);
   const res = await fetch(`${baseURL}${path}`, {
     method: "POST",
     headers: {
