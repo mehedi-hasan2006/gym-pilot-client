@@ -266,7 +266,7 @@ const LatestForumPosts = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900 dark:text-white truncate">
-                    {post.userName || "Anonymous"}
+                    {post?.authorName || "Anonymous"}
                   </p>
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                     <Clock className="w-3 h-3" />
@@ -309,7 +309,7 @@ const LatestForumPosts = () => {
 
                 {/* Read More Link */}
                 <Link
-                  href={`/forum/${post._id}`}
+                  href={`/community-forum/${post._id}`}
                   className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors"
                 >
                   Read More

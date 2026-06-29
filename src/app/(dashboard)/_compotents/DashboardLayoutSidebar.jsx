@@ -52,7 +52,7 @@ export function DashboardLayoutSidebar({ user }) {
     ],
   };
 
-  const navItems = dashboardItems[user?.role] ?? [];
+  const navItems = dashboardItems[user?.role] ?? "member";
 
   const userCard = (
     <div className="flex flex-col items-center gap-3 px-3 py-2.5 rounded-xl  border border-zinc-800/50 backdrop-blur-sm">

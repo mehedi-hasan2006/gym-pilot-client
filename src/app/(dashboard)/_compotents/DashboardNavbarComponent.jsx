@@ -122,7 +122,7 @@ const DashboardNavbarComponent = ({ user }) => {
           {/* Right side - Actions */}
           <div className="flex items-center gap-2">
             {/* Dark mode toggle */}
-            <button
+            {/* <button
               onClick={toggleDarkMode}
               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title={darkMode ? "Light mode" : "Dark mode"}
@@ -132,7 +132,7 @@ const DashboardNavbarComponent = ({ user }) => {
               ) : (
                 <Moon className="w-5 h-5" />
               )}
-            </button>
+            </button> */}
 
             {/* Notifications */}
             <div className="relative" ref={notificationsRef}>
@@ -180,7 +180,7 @@ const DashboardNavbarComponent = ({ user }) => {
             </div>
 
             {/* Profile dropdown */}
-            <div className="relative" ref={profileRef}>
+            <div className="relative " ref={profileRef}>
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -206,10 +206,10 @@ const DashboardNavbarComponent = ({ user }) => {
 
               {/* Profile dropdown menu */}
               {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="absolute right-0 mt-2 w-48 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="p-2">
                     <Link
-                      href="/profile"
+                      href="#"
                       className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                       onClick={() => setIsProfileOpen(false)}
                     >
@@ -217,7 +217,7 @@ const DashboardNavbarComponent = ({ user }) => {
                       Profile
                     </Link>
                     <Link
-                      href="/settings"
+                      href="#"
                       className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                       onClick={() => setIsProfileOpen(false)}
                     >
@@ -225,7 +225,7 @@ const DashboardNavbarComponent = ({ user }) => {
                       Settings
                     </Link>
                     <Link
-                      href="/help"
+                      href="#"
                       className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                       onClick={() => setIsProfileOpen(false)}
                     >
